@@ -23,6 +23,11 @@ class MainFragment : Fragment() {
         return inflater.inflate(R.layout.main_fragment, container, false)
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel = ViewModelProviders.of(this, MainViewModelFactory(context)).get(MainViewModel::class.java)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         view.registerDeviceButton.setOnClickListener {
@@ -35,7 +40,7 @@ class MainFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(this, MainViewModelFactory(context)).get(MainViewModel::class.java)
+        //viewModel = ViewModelProviders.of(this, MainViewModelFactory(context)).get(MainViewModel::class.java)
     }
 
     private fun showAlertMessage(message: String) {
