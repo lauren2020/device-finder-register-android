@@ -9,13 +9,31 @@
     tools:context=".ui.main.MainFragment">
 
     <TextView
-        android:id="@+id/message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="MainFragment"
+        android:text="If you don't have a code, log into you account online and add a new device"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/codeEntryEditText"></TextView>
+
+    <EditText
+        android:id="@+id/codeEntryEditText"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:hint="Enter Code"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
+
+    <Button
+        android:id="@+id/registerDeviceButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Register Device"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/codeEntryEditText"
+        ></Button>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

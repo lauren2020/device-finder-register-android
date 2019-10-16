@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.devicefinder.R
+import kotlinx.android.synthetic.main.main_fragment.view.*
 
 class MainFragment : Fragment() {
 
@@ -21,14 +22,15 @@ class MainFragment : Fragment() {
         return inflater.inflate(R.layout.main_fragment, container, false)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        view.registerDeviceButton.setOnClickListener {
+            viewModel.registerDevice(view.codeEntryEditText.text.toString())
+        }
+    }
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
-        // TODO: Use the ViewModel
     }
-
-    fun getUniqueIdentifier() {
-
-    }
-
 }
