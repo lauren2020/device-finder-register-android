@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
 import com.example.devicefinder.R
 import kotlinx.android.synthetic.main.main_fragment.view.*
 
@@ -27,10 +28,17 @@ class MainFragment : Fragment() {
         view.registerDeviceButton.setOnClickListener {
             viewModel.registerDevice(view.codeEntryEditText.text.toString())
         }
+        viewModel.showAlertMessage.observe(this, Observer {
+            showAlertMessage(it)
+        })
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
+        viewModel = ViewModelProviders.of(this, MainViewModelFactory(context)).get(MainViewModel::class.java)
+    }
+
+    private fun showAlertMessage(message: String) {
+        // TODO: Show Alert
     }
 }
