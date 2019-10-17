@@ -1,5 +1,6 @@
 package com.example.devicefinder.ui.main
 
+import android.Manifest
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -9,6 +10,9 @@ import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import com.example.devicefinder.R
 import kotlinx.android.synthetic.main.main_fragment.view.*
+import androidx.core.app.ActivityCompat
+import android.widget.Toast
+
 
 class MainFragment : Fragment() {
 
@@ -36,6 +40,15 @@ class MainFragment : Fragment() {
         viewModel.showAlertMessage.observe(this, Observer {
             showAlertMessage(it)
         })
+        viewModel.requestPermission.observe(this, Observer {
+            if (activity != null) {
+                ActivityCompat.requestPermissions(
+                    activity!!,
+                    arrayOf(it),
+                    1
+                )
+            }
+        })
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -45,5 +58,8 @@ class MainFragment : Fragment() {
 
     private fun showAlertMessage(message: String) {
         // TODO: Show Alert
+        val unwrappedContext = context ?: return
+        Toast.makeText(unwrappedContext, message,
+            Toast.LENGTH_LONG).show()
     }
 }
