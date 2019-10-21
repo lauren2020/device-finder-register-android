@@ -63,8 +63,7 @@ class MainViewModel(
     }
 
     private fun sendRegistrationPostToServer(params: Map<String, String>) {
-        // TODO: Add our server api path
-        val url = "http://devicefinder.com/path-to-be-here"
+        val url = "http://ec2-3-17-64-157.us-east-2.compute.amazonaws.com/api/v1/register"
         var registerDeviceRequest = StringRequest(Request.Method.POST, url,
             Response.Listener<String>() {
             @Override
