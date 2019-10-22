@@ -9,22 +9,22 @@
     tools:context=".ui.main.MainFragment">
 
     <TextView
+        android:id="@+id/registerDeviceText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="If you don't have a code, log into you account online and add a new device"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/codeEntryEditText"></TextView>
+        app:layout_constraintTop_toTopOf="parent"></TextView>
 
     <EditText
         android:id="@+id/codeEntryEditText"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:hint="Enter Code"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@+id/registerDeviceText"/>
 
     <Button
         android:id="@+id/registerDeviceButton"
