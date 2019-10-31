@@ -22,12 +22,13 @@ import java.net.HttpURLConnection
 import java.net.URI
 import java.net.URL
 import java.net.URLEncoder
+import java.util.*
+import kotlin.collections.HashMap
 
 
 class MainViewModel(
     var context: Context?
 ) : ViewModel() {
-    val RequestQueue = Volley.newRequestQueue(context)
     val showAlertMessage: MutableLiveData<String> = MutableLiveData()
     val requestPermission: MutableLiveData<String> = MutableLiveData()
 
@@ -39,12 +40,9 @@ class MainViewModel(
             return
         }
         val params = getParams(imei, code)
-        doAsync {
-            post(params)
+        doAsync() {
+            sendRegistrationPost(params)
         }.execute()
-        //sendPostRequest(code, imei)
-        //val params = getParams(imei, code)
-        //sendRegistrationPostToServer(params)
     }
 
     private fun getIMEINumber(): String? {
@@ -74,97 +72,8 @@ class MainViewModel(
         return  deviceData
     }
 
-    private fun sendRegistrationPostToServer(params: Map<String, String>) {
-        Log.d("REGISTER_DEVICE", "Sending request...")
-        val url = "http://ec2-3-17-64-157.us-east-2.compute.amazonaws.com/api/v1/register"
-        var registerDeviceRequest = StringRequest(Request.Method.POST, url,
-            Response.Listener<String>() {
-            @Override
-            fun onResponse(response: String) {
-                showAlertMessage.value = "Your device has been successfully registered."
-                Log.d("REGISTER_DEVICE", "Success Response recieved: ${response.toString()}")
-            }
-        }
-        , Response.ErrorListener() {
-            @Override
-            fun onErrorResponse(error: VolleyError) {
-                showAlertMessage.value = "Your device could not be registered! Please try again." //This should eventually be more specifc to each error message
-                Log.d("REGISTER_DEVICE", error.toString())
-            }
-        }).apply {
-            @Override
-            fun getBody(): ByteArray {
-                //JSONObject(params).toString()
-                Log.d("REGISTER_DEVICE", "Overriding Body: " + JSONObject(params).toString())
-                return JSONObject(params).toString().toByteArray()
-            }
-        }
-        RequestQueue.add(registerDeviceRequest)
-    }
-
-    fun sendPostRequest(code: String, imei: String) {
-
-        var reqParam = URLEncoder.encode("code", "UTF-8") + "=" + URLEncoder.encode(code, "UTF-8")
-        reqParam += "&" + URLEncoder.encode("imei", "UTF-8") + "=" + URLEncoder.encode(imei, "UTF-8")
-        val mURL = URL("http://ec2-3-17-64-157.us-east-2.compute.amazonaws.com/api/v1/register")
-
-        with(mURL.openConnection() as HttpURLConnection) {
-            // optional default is GET
-            requestMethod = "POST"
-
-            val wr = OutputStreamWriter(getOutputStream());
-            wr.write(reqParam);
-            wr.flush();
-
-            println("URL : $url")
-            println("Response Code : $responseCode")
-
-            BufferedReader(InputStreamReader(inputStream)).use {
-                val response = StringBuffer()
-
-                var inputLine = it.readLine()
-                while (inputLine != null) {
-                    response.append(inputLine)
-                    inputLine = it.readLine()
-                }
-                it.close()
-                println("Response : $response")
-            }
-        }
-    }
-
-//    fun post(params: Map<String, String>): String {
-//        val url = "http://ec2-3-17-64-157.us-east-2.compute.amazonaws.com/api/v1/register"
-//        return URL(url)
-//            .openConnection()
-//            .let {
-//                it as HttpURLConnection
-//            }.apply {
-//                setRequestProperty("Content-Type", "application/json; charset=utf-8")
-//                requestMethod = "POST"
-//
-//                doOutput = true
-//                val outputWriter = OutputStreamWriter(outputStream)
-//                outputWriter.write(JSONObject(params).toString())
-//                outputWriter.flush()
-//            }.let {
-//                if (it.responseCode == 200) it.inputStream else it.errorStream
-//            }.let { streamToRead ->
-//                BufferedReader(InputStreamReader(streamToRead)).use {
-//                    val response = StringBuffer()
-//
-//                    var inputLine = it.readLine()
-//                    while (inputLine != null) {
-//                        response.append(inputLine)
-//                        inputLine = it.readLine()
-//                    }
-//                    it.close()
-//                    response.toString()
-//                }
-//            }
-//    }
-
-    private fun post(params: Map<String, String>) {
+    private fun sendRegistrationPost(params: Map<String, String>) {
+        Log.d("REGISTER_DEVICE", "Sending Registration with " + params)
         var outputWriter: OutputStreamWriter? = null
         val url = "http://ec2-3-17-64-157.us-east-2.compute.amazonaws.com/api/v1/register"
         try {
@@ -173,7 +82,6 @@ class MainViewModel(
                 .let {
                     it as HttpURLConnection
                 }.apply {
-                    Log.d("REGISTER_DEVICE", "in apply")
                     setRequestProperty("Content-Type", "application/json; charset=utf-8")
                     requestMethod = "POST"
 
@@ -182,10 +90,9 @@ class MainViewModel(
                     outputWriter?.write(JSONObject(params).toString())
                     outputWriter?.flush()
                 }.let {
-                    if (it.responseCode == 200) it.inputStream else it.errorStream
+                    if (it.responseCode >= 200 && it.responseCode < 300) it.inputStream else it.errorStream
                 }.let { streamToRead ->
                     BufferedReader(InputStreamReader(streamToRead)).use {
-                        Log.d("REGISTER_DEVICE", "In buffer reader")
                         val response = StringBuffer()
                         Log.d("REGISTER_DEVICE", response.toString())
 
