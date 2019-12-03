@@ -35,11 +35,11 @@ class MainViewModel(
     fun registerDevice(code: String) {
         Log.d("REGISTER_DEVICE", code)
         val imei = getIMEINumber()
-        if (imei == null) {
-            showAlertMessage.value = "Error: Device IMEI number was unable to be retrieved. Check your permissions and try again."
+        /*if (imei == null) {
+            showAlertMessage.value =  "lol im fucked"   //"Error: Device IMEI number was unable to be retrieved. Check your permissions and try again."
             return
-        }
-        val params = getParams(imei, code)
+        } */
+        val params = getParams("12345", code)
         doAsync() {
             sendRegistrationPost(params)
         }.execute()
@@ -67,8 +67,12 @@ class MainViewModel(
     private fun getParams(imei: String, code: String): Map<String, String> {
         Log.d("REGISTER_DEVICE", imei + " " + code)
         val deviceData: HashMap<String, String> = HashMap()
+        if(code == "") {
+            showAlertMessage.value = "Error: Please enter a code"
+        }
         deviceData["imei"] = imei
         deviceData["code"] = code
+
         return  deviceData
     }
 
@@ -107,10 +111,10 @@ class MainViewModel(
                 }
             Log.d("REGISTER_DEVICE", urlret)
         } catch (e: Exception) {
-            //showAlertMessage.value = "Your device could not be registered! Please try again."
+            showAlertMessage.value = "Your device could not be registered! Please try again."
             Log.d("REGISTER_DEVICE", "Error: " + e.toString())
         } finally {
-            //showAlertMessage.value = "Your device has been successfully registered."
+            showAlertMessage.value = "Your device has been successfully registered."
             outputWriter?.close()
         }
     }
