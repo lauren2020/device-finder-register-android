@@ -99,7 +99,7 @@ class MainViewModel(
     private fun sendRegistrationPost(params: Map<String, String>) {
         Log.d("REGISTER_DEVICE", "Sending Registration with " + params)
         var outputWriter: OutputStreamWriter? = null
-        val url = "http://ec2-3-17-64-157.us-east-2.compute.amazonaws.com/api/v1/register"
+        val url = "https://device-finder/api/v1/register"
         val msg = handler.obtainMessage()
         val bundle : Bundle = Bundle()
         try {
