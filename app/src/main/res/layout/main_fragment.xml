@@ -8,11 +8,20 @@
     android:layout_height="match_parent"
     tools:context=".ui.main.MainFragment">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        app:layout_constraintTop_toTopOf="parent">
     <TextView
         android:id="@+id/registerDeviceText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="If you don't have a code, log into you account online and add a new device"
+        android:padding="10dp"
+        android:textSize="18dp"
+        android:textColor="@color/colorPrimaryDark"
+        android:textAlignment="center"
+        android:text="Enter your code below to register this device:"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"></TextView>
@@ -35,5 +44,30 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/codeEntryEditText"
         ></Button>
+
+    <TextView
+        android:id="@+id/noCodeText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:layout_marginTop="50dp"
+        android:paddingTop="50dp"
+        android:textColor="@color/colorPrimaryDark"
+        android:textAlignment="center"
+        android:text="Don't have a code?"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/registerDeviceButton"></TextView>
+
+    <TextView
+        android:id="@+id/deviceFinderUrlText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:text="visit www.device-finder.com to get started"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/noCodeText"></TextView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

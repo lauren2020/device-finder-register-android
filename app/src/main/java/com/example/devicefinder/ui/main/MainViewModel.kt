@@ -8,8 +8,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import org.json.JSONObject
 import android.Manifest.permission.READ_PHONE_STATE
+import android.app.Activity
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import androidx.core.content.ContextCompat
@@ -22,22 +24,16 @@ import kotlin.collections.HashMap
 
 
 class MainViewModel(
-    var context: Context?
+    var context: Context?,
+    var activity: Activity?
 ) : ViewModel() {
-    val ALERT_MESSAGE_KEY: String = "ALERT_MESSAGE_KEY"
-
     val showAlertMessage: MutableLiveData<String> = MutableLiveData()
     val requestPermission: MutableLiveData<String> = MutableLiveData()
 
-
-    public val handler: android.os.Handler = object : android.os.Handler(Looper.getMainLooper()) {
-
-        override fun handleMessage(inputMessage: Message) {
-            val bundle: Bundle = inputMessage.data
-            val s: String = bundle.getString(ALERT_MESSAGE_KEY)?: "Default Alert"
-            //showAlertMessage.value = s
-            Log.d("REGISTER_DEVICE", "$s")
-        }
+    fun handleShowMessage(message: String) {
+        activity?.runOnUiThread(Runnable() {
+            showAlertMessage.value = message
+        })
     }
 
 
@@ -57,7 +53,7 @@ class MainViewModel(
 
     private fun getIMEINumber(): String? {
         //Testing only
-        return "testImei1234"
+        return "testImei12345"
 
         val unwrappedContext = context ?: return null
         try{
@@ -78,7 +74,6 @@ class MainViewModel(
     }
 
     private fun getParams(imei: String, code: String): Map<String, String> {
-        Log.d("REGISTER_DEVICE", imei + " " + code)
         val deviceData: HashMap<String, String> = HashMap()
         if(code == "") {
             showAlertMessage.value = "Error: Please enter a code" // After some testing I can see that there is a toast that appears but the app crashes due to another bug
@@ -91,11 +86,8 @@ class MainViewModel(
     }
 
     private fun sendRegistrationPost(params: Map<String, String>) {
-        Log.d("REGISTER_DEVICE", "Sending Registration with " + params)
         var outputWriter: OutputStreamWriter? = null
         val url = "https://www.device-finder.com/api/v1/register"
-        val msg = handler.obtainMessage()
-        val bundle : Bundle = Bundle()
         try {
             val urlret = URL(url)
                 .openConnection()
@@ -105,7 +97,6 @@ class MainViewModel(
                     setRequestProperty("Content-Type", "application/json; charset=utf-8")
                     requestMethod = "POST"
 
-                    Log.d("REGISTER_DEVICE", "Setting writer")
                     doOutput = true
                     outputWriter = OutputStreamWriter(outputStream)
                     outputWriter?.write(JSONObject(params).toString())
@@ -116,7 +107,8 @@ class MainViewModel(
                 }.let { streamToRead ->
                     BufferedReader(InputStreamReader(streamToRead)).use {
                         val response = StringBuffer()
-                        Log.d("REGISTER_DEVICE", response.toString())
+
+                        //handleShowMessage("Your device has been successfully registered.")
 
                         var inputLine = it.readLine()
                         while (inputLine != null) {
@@ -127,21 +119,11 @@ class MainViewModel(
                         response.toString()
                     }
                 }
-            Log.d("REGISTER_DEVICE", urlret)
+            handleShowMessage(urlret)
         } catch (e: Exception) {
-
-            val messageBundle: Bundle = Bundle()
-            messageBundle.putString(ALERT_MESSAGE_KEY,"Your device could not be registered! Please try again." )
-            msg.data = messageBundle
-            handler.handleMessage(msg)
-            //showAlertMessage.value = "Your device could not be registered! Please try again." // Possibly have boolean that we can check after the function gets to this point and then based on that set the value??
-            Log.d("REGISTER_DEVICE", "Error: " + e.toString()) // Another possiblity is to call a function that is passed boolean that sets the toast
+            handleShowMessage("There was an error registering your device! Please try again.")
+            Log.d("REGISTER_DEVICE", "Error: " + e.toString())
         } finally {
-            val messageBundle: Bundle = Bundle()
-            messageBundle.putString(ALERT_MESSAGE_KEY, "Your device has been successfully registered.")
-            msg.data = messageBundle
-            handler.handleMessage(msg)
-
             outputWriter?.close()
         }
     }
