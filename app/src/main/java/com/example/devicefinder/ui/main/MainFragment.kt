@@ -1,12 +1,14 @@
 package com.example.devicefinder.ui.main
 
-import android.Manifest
+import android.app.Activity
+import android.content.Context
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.lifecycle.Observer
 import com.example.devicefinder.R
 import kotlinx.android.synthetic.main.main_fragment.view.*
@@ -29,12 +31,13 @@ class MainFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProviders.of(this, MainViewModelFactory(context)).get(MainViewModel::class.java)
+        viewModel = ViewModelProviders.of(this, MainViewModelFactory(context, activity)).get(MainViewModel::class.java)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         view.registerDeviceButton.setOnClickListener {
+            hideKeyboard()
             viewModel.registerDevice(view.codeEntryEditText.text.toString())
         }
         viewModel.showAlertMessage.observe(this, Observer {
@@ -51,15 +54,25 @@ class MainFragment : Fragment() {
         })
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        //viewModel = ViewModelProviders.of(this, MainViewModelFactory(context)).get(MainViewModel::class.java)
-    }
-
     private fun showAlertMessage(message: String) {
-        // TODO: Show Alert
         val unwrappedContext = context ?: return
         Toast.makeText(unwrappedContext, message,
             Toast.LENGTH_LONG).show()
     }
+
+    fun Fragment.hideKeyboard() {
+        view?.let { activity?.hideKeyboard(it) }
+    }
+
+    fun Activity.hideKeyboard() {
+        hideKeyboard(currentFocus ?: View(this))
+    }
+
+    fun Context.hideKeyboard(view: View) {
+        val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+    }
 }
+
+
+
